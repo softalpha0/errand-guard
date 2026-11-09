@@ -1,0 +1,56 @@
+name: errand-guard
+version: 0.1.0
+description: >-
+  Run real-world errands (airtime, data, eSIMs, gift cards) through Bitrefill,
+  and block any payment that does not match the errand you confirmed:
+  wrong amount, item, recipient, merchant or quantity is stopped before payment.
+author: softalpha0
+license: MIT
+homepage: https://github.com/softalpha0/errand-guard
+manifest_version: 2
+api_version: 1
+requires_hermes: ">=0.22.7"
+tags: [payments, guardrails, errands, bitrefill, esim, gift-cards]
+
+provides_tools:
+  - errand_create
+  - errand_confirm
+  - errand_list
+  - errand_cancel
+  - errand_search_products
+  - errand_quote
+  - errand_buy
+  - errand_status
+  - errand_receipt
+provides_hooks:
+  - pre_tool_call
+  - post_tool_call
+  - post_approval_response
+
+requires_env:
+  - name: BITREFILL_API_KEY
+    description: "Your Bitrefill Personal API key (bitrefill.com > Account > Developers)"
+    url: "https://www.bitrefill.com/account/developers"
+    secret: true
+
+config_schema:
+  bitrefill_api_key:
+    type: secret
+    env: BITREFILL_API_KEY
+    label: "Bitrefill API key"
+    description: "Personal API key. Stored in Hermes's .env, never in config.yaml."
+  auto_approve_max:
+    type: float
+    default: 0
+    label: "Auto-approve up to"
+    description: "Payments that match your errand and cost at most this much go through without asking again. 0 = always ask (recommended)."
+  daily_cap:
+    type: float
+    default: 0
+    label: "Daily spending cap"
+    description: "Block payments once this much was spent today (in the errand's currency). 0 = no cap."
+  default_expiry_hours:
+    type: int
+    default: 24
+    label: "Errand expiry (hours)"
+    description: "How long a confirmed errand stays valid when you don't say."
