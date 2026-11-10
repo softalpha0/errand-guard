@@ -9,7 +9,8 @@ ERRAND_CREATE = {
         "ALWAYS call this first when the user asks you to buy, top up or pay for anything. It turns the "
         "user's instruction into an errand (a mandate): exactly what to buy, for whom, the maximum price and "
         "quantity. Copy the user's own words; never invent or raise limits. Creates a DRAFT; then call "
-        "errand_confirm so the user approves it. Errand Guard blocks any payment that does not match."
+        "errand_confirm so the user approves it. Errand Guard blocks any payment that does not match. "
+        "Full workflow: skill_view('errand-guard:errand-guard')."
     ),
     "parameters": {
         "type": "object",

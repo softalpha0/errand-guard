@@ -170,8 +170,8 @@ def check_confirm(errand: Optional[dict], *, conversation_id: str, now: float) -
     problem = _errand_state(errand, conversation_id, now, purpose="confirm")
     if problem:
         return problem
-    message = (f"Confirm errand #{errand['id']}: {describe_errand(errand)}. "
-               "The agent can only pay for exactly this. Approve only if it matches what you asked.")
+    # Short, key facts first: Hermes's approval box gives the description only the rows left over.
+    message = f"Confirm errand #{errand['id']}: {describe_errand(errand)}"
     return Decision(APPROVE, "confirm-errand", message, errand["id"])
 
 
@@ -200,10 +200,15 @@ def check_purchase(errand: Optional[dict], purchase: Optional[dict], *, conversa
                           f"{n.fmt_money(spent_today, cur)} already spent + {n.fmt_money(price, cur)} "
                           f"= {n.fmt_money(total, cur)}")
 
-    summary = (f"Errand #{eid}: pay {n.fmt_money(price, cur)} for {describe_purchase(purchase)} "
-               f"(your max {n.fmt_money(errand.get('max_amount'), errand.get('currency') or '')}).")
+    product = purchase.get("product_name") or purchase.get("product_id") or "product"
+    if purchase.get("package"):
+        product += f" ({purchase['package']})"
+    qty = int(purchase.get("quantity") or 1)
+    summary = (f"PAY {n.fmt_money(price, cur)} · {product}" + (f" × {qty}" if qty != 1 else "")
+               + f" · to {purchase.get('recipient') or 'your account'}"
+               + f" · errand #{eid}, max {n.fmt_money(errand.get('max_amount'), errand.get('currency') or '')}")
     if price > auto_approve_max:
-        return Decision(APPROVE, "above-auto-approve", summary + " Approve only if this is what you asked for.",
+        return Decision(APPROVE, "above-auto-approve", summary,
                         eid, details={"price": str(price), "currency": cur})
     return Decision(ALLOW, "matches-errand", summary, eid, details={"price": str(price), "currency": cur})
 

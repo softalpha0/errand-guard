@@ -5,6 +5,8 @@ description: Run real-world purchases (airtime, mobile data, travel eSIMs, gift 
 
 # Errand Guard: buy things only the way the user asked
 
+(This skill's full name is `errand-guard:errand-guard`.)
+
 Errand Guard turns the user's instruction into an **errand** (a mandate) and blocks any
 payment that does not match it. Its checks run in code before every payment; you cannot
 talk past them, so don't try. Work with them.
